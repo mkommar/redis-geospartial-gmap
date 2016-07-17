@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "mygamecatalog www watch",
+      "name": "redis-geospartial-gmap www watch",
       "script": "/usr/bin/nodemon",
       "args": "--watch server --watch shared --watch app.js ./bin/www",
       "interpreter": "none",
@@ -10,7 +10,7 @@
       }
     },
     {
-      "name": "mygamecatalog webpack",
+      "name": "redis-geospartial-gmap webpack",
       "script": "./bin/webpack",
       "args": "./bin/www",
       "env": {
@@ -18,7 +18,7 @@
       }
     },
     {
-      "name": "mygamecatalog api watch",
+      "name": "redis-geospartial-gmap api watch",
       "script": "/usr/bin/nodemon",
       "args": "--watch server --watch api.js ./bin/api",
       "interpreter": "none",

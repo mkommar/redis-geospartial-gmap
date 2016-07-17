@@ -1,6 +1,6 @@
 ## Production
-    git clone https://amokrushin@bitbucket.org/lucky7bizdev/mygamescatalog.git mygamescatalog
-    cd mygamescatalog
+    git clone https://amokrushin@bitbucket.org/amokrushin/redis-geospartial-gmap.git redis-geospartial-gmap
+    cd redis-geospartial-gmap
     npm i --production
 
 ### App configuration
@@ -21,8 +21,8 @@
 ## Development
 
 ### Installation
-    git clone https://amokrushin@bitbucket.org/lucky7bizdev/mygamescatalog.git dev.mygamescatalog
-    cd dev.mygamescatalog
+    git clone https://amokrushin@bitbucket.org/amokrushin/redis-geospartial-gmap.git dev.redis-geospartial-gmap
+    cd dev.redis-geospartial-gmap
     npm i                                   # install all dependencies
 
 ### App configuration
@@ -42,7 +42,7 @@
 
     node ./bin/admin
 
-    local@mygamescatalog~$ help
+    local@redis-geospartial-gmap~$ help
         Commands:
         help [command...]      Provides help for a given command.
         exit                   Exits application.

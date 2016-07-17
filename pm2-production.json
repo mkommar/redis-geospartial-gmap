@@ -1,14 +1,14 @@
 {
   "apps": [
     {
-      "name": "mygamecatalog www production",
+      "name": "redis-geospartial-gmap www production",
       "script": "./bin/www",
       "env": {
         "NODE_ENV": "production"
       }
     },
     {
-      "name": "mygamecatalog api production",
+      "name": "redis-geospartial-gmap api production",
       "script": "./bin/api",
       "env": {
         "NODE_ENV": "production"
