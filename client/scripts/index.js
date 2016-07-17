@@ -14,12 +14,14 @@ import $ from "jquery";
 import {init as mdlInit} from "./mdl";
 import {setAuthToken, getCurrentUser, switchLang, socketConnect} from "./vuex/actions";
 import VueMdl from "vue-mdl";
+import VueIcon from "vue-icons/icon";
 
 sync( store, router );
 
 Vue.config.debug = true;
 Vue.config.devtools = true;
 Vue.use( VueMdl );
+Vue.component( 'icon', VueIcon );
 
 const init = setAuthToken( store, cookies.get( 'jwt' ) )
     .then( () => Promise.all( [

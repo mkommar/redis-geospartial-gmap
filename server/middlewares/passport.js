@@ -101,7 +101,10 @@ module.exports = function( passport ) {
         },
         /*
          *  Credentials:
-         *      https://console.developers.google.com/
+         *      https://console.developers.google.com
+         *  URLs:
+         *      https://example.org
+         *      https://example.org/auth/google/callback
          *  Scopes:
          *      https://developers.google.com/identity/protocols/googlescopes
          */
@@ -118,6 +121,9 @@ module.exports = function( passport ) {
         /*
          *  Credentials:
          *      https://developers.facebook.com/quickstarts/?platform=web
+         *  URLs:
+         *      https://example.org
+         *      https://example.org/auth/facebook/callback
          *  Scopes:
          *      https://developers.facebook.com/docs/facebook-login/permissions/overview
          */
