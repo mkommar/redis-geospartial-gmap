@@ -11,10 +11,7 @@ const async = require( 'neo-async' ),
     logger = require( '../logger' ),
     error = require( '../error' ),
     debug = require( 'debug' )( 'model:account' ),
-    serviceApi = {
-        origin: require( '../service/origin' ),
-        steam: require( '../service/steam' )
-    },
+    serviceApi = {},
     modelDocument = require( '../lib/model/document' ),
     schema = {
         properties: {

@@ -30,5 +30,3 @@ export default new Vuex.Store( {
     },
     strict: config.env === 'development'
 } );
-
-console.log( platform );
