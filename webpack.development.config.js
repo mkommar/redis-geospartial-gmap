@@ -66,8 +66,12 @@ const Webpack = require( 'webpack' ),
                     test: /\.json/,
                     loaders: ['json']
                 }
+            ],
+            postLoaders: [
+                {test: /vue-icons/, loader: 'callback-loader'}
             ]
         },
+        callbackLoader: require( 'vue-icons/icon-loader' )( require( './client/icons.json' ) ),
         // don't parse some dependencies to speed up build.
         // can probably do this non-AMD/CommonJS deps
         //noParse: [

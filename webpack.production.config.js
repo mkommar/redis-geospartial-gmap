@@ -62,8 +62,12 @@ const Webpack = require( 'webpack' ),
                     test: /\.json/,
                     loaders: ['json']
                 }
+            ],
+            postLoaders: [
+                {test: /vue-icons/, loader: 'callback-loader'}
             ]
         },
+        callbackLoader: require( 'vue-icons/icon-loader' )( require( './client/icons.json' ) ),
         postcss: [autoprefixer],
         plugins: [
             new ExtractTextPlugin( 'bundle.css', {allChunks: true} ),
