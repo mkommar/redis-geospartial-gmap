@@ -1,0 +1,13 @@
+<h2>
+    {{error.status}}
+    <small>{{error.message}}</small>
+</h2>
+<h5>Code: {{error.code}}</h5>
+<h5>{{error.description}}</h5>
+<h5>{{error.metadata}}</h5>
+{{#is locals.env "development"}}
+    <h5>Tags</h5>
+    <pre style="white-space: pre-wrap;">{{json error.tags}}</pre>
+    <h5>Metadata</h5>
+    <pre style="white-space: pre-wrap;">{{json error.metadata}}</pre>
+{{/is}}

@@ -1,0 +1,21 @@
+@import "../../styles/exports";
+
+.vc-error-popup {
+    .vc--modal-container {
+        min-width : 400px;
+        max-width : 95vw;
+        > div {
+            padding : 1rem;
+        }
+    }
+    .vc--modal-header {
+        background-color : #ef5350 !important;
+    }
+    pre {
+        white-space : pre-wrap;
+    }
+    .modal-body {
+        max-height : 80vh;
+        overflow-y : scroll;
+    }
+}

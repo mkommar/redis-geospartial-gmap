@@ -1,0 +1,116 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const _ = require( 'lodash' ),
+    async = require( 'neo-async' ),
+    vorpal = require( 'vorpal' )(),
+    modelUser = require( '../server/models/user' );
+
+const models = ['account', 'user', 'game'];
+
+vorpal.command( 'flush-model [model]' )
+    .autocomplete( models )
+    .action( function( args, callback ) {
+        const model = require( '../server/models/' + args.model );
+        model.flush( err => {
+            if( err )
+            {
+                this.log( err );
+            }
+            else
+            {
+                this.log( `Model ${args.model} flushed` );
+            }
+            callback();
+        } );
+    } );
+
+vorpal.command( 'rebuild-index [model]' )
+    .autocomplete( models )
+    .action( function( args, callback ) {
+        const model = require( '../server/models/' + args.model );
+        async.series( [
+            callback => model.rebuildSimpleIndexes( err => {
+                err ? this.log( err ) : this.log( `Model ${args.model} simple index rebuild: ok` );
+                callback();
+            } ),
+            callback => model.rebuildSortedIndex( err => {
+                err ? this.log( err ) : this.log( `Model ${args.model} sorted index rebuild: ok` );
+                callback();
+            } ),
+            callback => model.rebuildFulltextIndex( err => {
+                err ? this.log( err ) : this.log( `Model ${args.model} fulltext index rebuild: ok` );
+                callback();
+            } )
+        ], ( err, res ) => {
+            if( err ) this.log( err );
+            callback();
+        } )
+    } );
+
+vorpal
+    .command( 'add-admin-role' )
+    .action( function( args, callback ) {
+
+        this.prompt( {
+            type: 'input',
+            name: 'steamId',
+            message: 'Input steam id: '
+        }, ( {steamId} ) => {
+            async.autoInject( {
+                steamId: async.constant( steamId ),
+                user: ['steamId', modelUser.getByPrimary],
+                update: ['steamId', 'user', ( steamId, user, callback )=> {
+                    const roles = _.uniq( _.concat( user.roles, 'admin' ) );
+                    modelUser.setValue( user.id, 'roles', roles, callback );
+                }]
+            }, err => {
+                if( err )
+                {
+                    if( err.code === 11 ) this.log( `User with steamId=${steamId} not found` );
+                    if( err.code !== 11 )  this.log( err );
+                }
+                else
+                {
+                    this.log( `Admin role added to user with steamId=${steamId}` );
+                }
+                callback();
+            } );
+        } );
+    } );
+
+vorpal
+    .command( 'remove-admin-role' )
+    .action( function( args, callback ) {
+
+        this.prompt( {
+            type: 'input',
+            name: 'steamId',
+            message: 'Input steam id: '
+        }, ( {steamId} ) => {
+            async.autoInject( {
+                steamId: async.constant( steamId ),
+                user: ['steamId', modelUser.getByPrimary],
+                update: ['steamId', 'user', ( steamId, user, callback )=> {
+                    const roles = _.without( user.roles, 'admin' );
+                    modelUser.setValue( user.id, 'roles', roles, callback );
+                }]
+            }, err => {
+                if( err )
+                {
+                    if( err.code === 11 ) this.log( `User with steamId=${steamId} not found` );
+                    if( err.code !== 11 )  this.log( err );
+                }
+                else
+                {
+                    this.log( `Admin role removed from user with steamId=${steamId}` );
+                }
+                callback();
+            } );
+        } );
+    } );
+
+vorpal
+    .show()
+    .parse( process.argv );

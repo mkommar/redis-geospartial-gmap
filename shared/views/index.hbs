@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{locals.lang}}">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#0d0d0d">
+    <link rel="icon" href="{{locals.baseUrl}}/favicon.ico?v=1"/>
+    <link rel="dns-prefetch" href="{{@api.baseUrl}}">
+    <link rel="dns-prefetch" href="{{@io.baseUrl}}">
+    <title>{{title}}</title>
+    <script src="{{locals.baseUrl}}/build/bundle.js"></script>
+    {{#is locals.env "production"}}
+        <link rel="stylesheet" href="{{locals.baseUrl}}/build/bundle.css">
+    {{else}}
+        <script src="{{locals.baseUrl}}/webpack-dev-server.js"></script>
+    {{/is}}
+</head>
+<body id="app">
+{{#if error}}
+    {{>error}}
+{{else}}
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--no-desktop-drawer-button">
+        <pr-header></pr-header>
+        <pr-drawer></pr-drawer>
+        <main class="mdl-layout__content">
+            <div class="page-content">
+                <router-view></router-view>
+            </div>
+            <div class="mdl-layout-spacer"></div>
+            <pr-footer></pr-footer>
+        </main>
+    </div>
+
+    <vc-error-popup></vc-error-popup>
+{{/if}}
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "apps": [
+    {
+      "name": "mygamecatalog www watch",
+      "script": "/usr/bin/nodemon",
+      "args": "--watch server --watch shared --watch app.js ./bin/www",
+      "interpreter": "none",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "mygamecatalog webpack",
+      "script": "./bin/webpack",
+      "args": "./bin/www",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "mygamecatalog api watch",
+      "script": "/usr/bin/nodemon",
+      "args": "--watch server --watch api.js ./bin/api",
+      "interpreter": "none",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}

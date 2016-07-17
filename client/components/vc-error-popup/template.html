@@ -1,0 +1,6 @@
+<div class="vc-error-popup">
+    <vcu-modal @close="close" :loading="loading" :visible="visible">
+        <span slot="header" v-text="title"></span>
+        <div slot="body" v-show="!loading" v-html="body"></div>
+    </vcu-modal>
+</div>

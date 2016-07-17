@@ -1,0 +1,8 @@
+$image_path : '~material-design-lite/src/images';
+
+@import "~material-design-lite/src/color-definitions";
+$color-primary : $palette-indigo-500;
+$color-primary-dark : $palette-indigo-700;
+$color-accent : $palette-blue-A200;
+@import "~material-design-lite/src/material-design-lite-grid.scss";
+@import "~material-design-lite/src/material-design-lite.scss";

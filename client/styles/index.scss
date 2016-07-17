@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+@import "./variables";
+@import "./font";
+@import "./mdl";
+
+.mdl-layout__content {
+    display   : flex;
+    flex-flow : column nowrap;
+}
+
+.mdl-layout__content > *:not(.mdl-layout-spacer) {
+    flex : none;
+}
+
+.content {
+    max-width : 1060px;
+}
+
+html, body {
+    font-family : Roboto, sans-serif;
+}

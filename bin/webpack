@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const webpack = require( 'webpack' ),
+    path = require( 'path' ),
+    WebpackDevServer = require( 'webpack-dev-server' ),
+    webpackConfig = require( '../webpack.development.config' ),
+    logger = require( '../server/logger' ),
+    config = require( '../config.json' );
+
+const port = config.webpack.port,
+    host = config.webpack.host,
+    appHost = config.app.host,
+    appPort = config.app.port;
+
+/* app and webpack ports swapped in development mode */
+logger.info( 'WDS listening on ' + appHost + ':' + appPort );
+
+const compiler = webpack( webpackConfig ),
+    frontServer = new WebpackDevServer( compiler, {
+        hot: true,
+        contentBase: path.resolve( __dirname, '../client' ),
+        noInfo: true,
+        quiet: false,
+        stats: {
+            colors: true
+        },
+        publicPath: webpackConfig.output.publicPath,
+        proxy: {
+            "*": {
+                target: {
+                    host: host,
+                    port: port
+                }
+            }
+        }
+    } );
+
+compiler.plugin( 'done', function( stats ) {
+    logger.info( 'WDS compiler', (stats.endTime - stats.startTime) + 'ms' );
+} );
+
+frontServer.listen( appPort, appHost, function() {
+    logger.info( 'WDS bundling project, please wait...' );
+} );
+
+process.once( 'SIGINT', function() {
+    frontServer.close();
+    logger.info( 'WDS exit' );
+    setTimeout( function() {
+        process.exit( 1 );
+    }, 1000 );
+} );

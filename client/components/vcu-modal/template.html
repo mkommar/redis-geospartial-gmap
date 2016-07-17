@@ -1,0 +1,21 @@
+<div class="vcu-modal">
+    <div class="vc--modal-mask" v-show="visible" transition="vc--modal">
+        <div class="vc--modal-wrapper ">
+            <div class="vc--modal-container">
+
+                <h2 class="vc--modal-header">
+                    <button type="button" class="vc--modal-close-button" @click="close">
+                        &times;
+                    </button>
+                    <slot name="header"></slot>
+                </h2>
+
+                <div class="vc--modal-body">
+                    <vcu-spinner v-show="loading"></vcu-spinner>
+                    <slot name="body"></slot>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

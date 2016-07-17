@@ -1,0 +1,6 @@
+<nav class="mdl-navigation mdl-layout--large-screen-only">
+    <a class="mdl-navigation__link" v-link="{ path: '/games' }" v-if="user.id">Games</a>
+    <a class="mdl-navigation__link" v-link="{ path: '/accounts' }" v-if="user.id">Accounts</a>
+    <a class="mdl-navigation__link" v-link="{ path: '/login' }" v-if="!user.id">Login</a>
+    <a class="mdl-navigation__link" :href="config.app.host+'/logout'" v-if="user.id">Logout</a>
+</nav>

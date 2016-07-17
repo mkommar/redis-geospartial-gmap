@@ -1,0 +1,18 @@
+{
+  "apps": [
+    {
+      "name": "mygamecatalog www production",
+      "script": "./bin/www",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    {
+      "name": "mygamecatalog api production",
+      "script": "./bin/api",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}

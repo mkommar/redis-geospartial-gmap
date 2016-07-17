@@ -1,0 +1,67 @@
+{
+  "env": "development",
+  "app": {
+    "host": "localhost",
+    "port": 5230,
+    "secure": true,
+    "trustProxy": true,
+    "baseUrl": "https://example.com",
+    "sessionStore": "redis",
+    "private": {
+      "enabled": true,
+      "users": [
+        {
+          "login": "",
+          "password": ""
+        }
+      ]
+    }
+  },
+  "api": {
+    "host": "localhost",
+    "port": 5240,
+    "secure": true,
+    "trustProxy": true,
+    "baseUrl": "https://api.example.com",
+    "cors": {
+      "origin": "https://example.com"
+    }
+  },
+  "webpack": {
+    "host": "localhost",
+    "port": 5229
+  },
+  "redis": {
+    "host": "localhost",
+    "port": "6379",
+    "auth_pass": "",
+    "database": 1,
+    "databaseTest": 2
+  },
+  "passport": {
+    "steam": {
+      "apiKey": ""
+    },
+    "google": {
+      "clientId": "",
+      "clientSecret": "",
+      "scope": [
+        "profile",
+        "email"
+      ]
+    },
+    "facebook": {
+      "clientId": "",
+      "clientSecret": "",
+      "scope": [
+        "email"
+      ]
+    }
+  },
+  "service": {
+    "origin": {
+      "login": "",
+      "password": ""
+    }
+  }
+}
