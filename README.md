@@ -1,5 +1,5 @@
 ## Production
-    git clone https://amokrushin@bitbucket.org/amokrushin/redis-geospartial-gmap.git redis-geospartial-gmap
+    git clone https://amokrushin@bitbucket.org/amokrushin/bitbucket-redis-geospartial-gmap.git redis-geospartial-gmap
     cd redis-geospartial-gmap
     npm i --production
 
@@ -21,7 +21,7 @@
 ## Development
 
 ### Installation
-    git clone https://amokrushin@bitbucket.org/amokrushin/redis-geospartial-gmap.git dev.redis-geospartial-gmap
+    git clone https://amokrushin@bitbucket.org/amokrushin/bitbucket-redis-geospartial-gmap.git dev.redis-geospartial-gmap
     cd dev.redis-geospartial-gmap
     npm i                                   # install all dependencies
 
@@ -55,8 +55,8 @@
 
 Generate keypair
 
-    $ ssh-keygen -t rsa -b 4096 -f ~/.ssh/bitbucket-lucky7bizdev
-    $ chmod 700 ~/.ssh/bitbucket-lucky7bizdev*
+    $ ssh-keygen -t rsa -b 4096 -f ~/.ssh/bitbucket-redis-geospartial-gmap
+    $ chmod 700 ~/.ssh/bitbucket-redis-geospartial-gmap*
 
 Add the public key to bitbucket.org
 
@@ -65,7 +65,7 @@ Add the public key to bitbucket.org
 Add private key to local session
 
     $ eval `ssh-agent -s`
-    $ ssh-add ~/.ssh/bitbucket-lucky7bizdev
+    $ ssh-add ~/.ssh/bitbucket-redis-geospartial-gmap
 
 Test SSH Access
 
