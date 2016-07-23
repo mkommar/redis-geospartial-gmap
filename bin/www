@@ -8,8 +8,9 @@ const http = require( 'http' ),
     logger = require( '../server/logger' ),
     appConfig = require( '../config.json' );
 
-const port = appConfig.env === 'development' ? appConfig.webpack.port : appConfig.app.port,
-    host = appConfig.env === 'development' ? appConfig.webpack.host : appConfig.app.host;
+const env = appConfig.env || process.env.NODE_ENV || 'production',
+    port = env === 'development' ? appConfig.webpack.port : appConfig.app.port,
+    host = env === 'development' ? appConfig.webpack.host : appConfig.app.host;
 
 app.set( 'port', port );
 app.set( 'host', host );

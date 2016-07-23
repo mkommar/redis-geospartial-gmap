@@ -14,7 +14,10 @@ const async = require( 'neo-async' ),
     modelSchema = require( '../model-schema' ),
     redisHelper = require( '../redis-helper' ),
     indexFulltext = require( './document.index.fulltext' ),
-    AbstractModel = {};
+    AbstractModel = {},
+    plugins = {
+        georadius: require( './document.query.plugin.georadius' )
+    };
 
 _.mixin( AbstractModel, indexFulltext );
 
@@ -261,6 +264,13 @@ AbstractModel.upsert = function( redis, model, entity, callback ) {
             } );
         },
         function( id, processedData, update, callback ) {
+            if( model.entityDb )
+            {
+                return model.entityDb.put( model.ns + ':' + id, JSON.stringify( processedData ), err => {
+                    if( err ) return callback( error.tag( err, '1469104042796' ) );
+                    callback( null, id, processedData, update );
+                } );
+            }
             if( update )
             {
                 let data = modelUtil.zipKeys( processedData, model.schema, model.jsonReplacements );
@@ -307,6 +317,18 @@ AbstractModel.upsert = function( redis, model, entity, callback ) {
             } );
         },
         function( id, processedData, update, callback ) {
+            updateGeoIndex( redis, model, id, processedData, function( err ) {
+                if( err ) return callback( error.tag( err, '1461140493102' ) );
+                callback( null, id, processedData, update );
+            } );
+        },
+        function( id, processedData, update, callback ) {
+            plugins.georadius.insert( redis, model, id, processedData, function( err ) {
+                if( err ) return callback( error.tag( err, '1461140493102' ) );
+                callback( null, id, processedData, update );
+            } );
+        },
+        function( id, processedData, update, callback ) {
             if( !update && _.isFunction( model.events && model.events.afterCreate ) )
             {
                 return model.events.afterCreate( processedData, function( err ) {
@@ -342,12 +364,22 @@ AbstractModel.upsert = function( redis, model, entity, callback ) {
 AbstractModel.getById = function( redis, model, id, callback ) {
     async.waterfall( [
         function( callback ) {
-            redis.lrange( model.ns + ':' + id, 0, -1, function( err, list ) {
-                if( err ) return callback( error.tag( err, '1459611298464' ) );
-                if( _.isEmpty( list ) ) return callback( error.code( 11, '1459114777124' ) );
-                const modelObject = modelUtil.unzipKeys( list, model.schema, model.jsonReplacements );
-                callback( null, _.assign( modelObject, {id: Number( id )} ) );
-            } );
+            if( model.entityDb )
+            {
+                model.entityDb.get( model.ns + ':' + id, ( err, value ) => {
+                    if( err ) return callback( err );
+                    callback( null, JSON.parse( value ) );
+                } );
+            }
+            else
+            {
+                redis.lrange( model.ns + ':' + id, 0, -1, function( err, list ) {
+                    if( err ) return callback( error.tag( err, '1459611298464' ) );
+                    if( _.isEmpty( list ) ) return callback( error.code( 11, '1459114777124' ) );
+                    const modelObject = modelUtil.unzipKeys( list, model.schema, model.jsonReplacements );
+                    callback( null, _.assign( modelObject, {id: Number( id )} ) );
+                } );
+            }
         },
         function( modelData, callback ) {
             modelSchema.processHook( model.schema, 'onLoad', modelData, function( err ) {
@@ -597,23 +629,46 @@ AbstractModel.getFieldsBatch = function( redis, model, fields, ids, processHooks
  */
 /** */
 AbstractModel.loadByIds = function( redis, model, ids, callback ) {
-    const query = _.map( ids, function( id ) {
-        return ['lrange', model.ns + ':' + id, 0, -1];
-    } );
-    redis.batch( query ).exec( function( err, list ) {
-        if( err ) return callback( error.tag( err, '1459123917809' ) );
-        const items = _.chain( list )
-            .map( _.partial( modelUtil.unzipKeys, _, model.schema, model.jsonReplacements ) )
-            .map( ( item, index ) => _.assign( item, {id: ids[index]} ) )
-            .value();
+    if( model.entityDb )
+    {
+        return async.map( ids, ( id, callback ) => {
+            // todo: find and fix bug with NaN id
+            if( _.isNaN( id ) ) return {id: 0};
+            model.entityDb.get( model.ns + ':' + id, ( err, value ) => {
+                if( err ) return callback( err );
+                callback( null, JSON.parse( value ) );
+            } )
+        }, ( err, items ) => {
+            if( err ) return callback( error.tag( err, '1469105982622' ) );
 
-        async.forEach( items, function( item, callback ) {
-            modelSchema.processHook( model.schema, 'onLoad', item, callback )
-        }, function( err ) {
-            if( err ) return callback( error.tag( err, '1459612746303' ) );
-            callback( null, items );
+            async.forEach( items, function( item, callback ) {
+                modelSchema.processHook( model.schema, 'onLoad', item, callback )
+            }, function( err ) {
+                if( err ) return callback( error.tag( err, '1469105292927' ) );
+                callback( null, items );
+            } );
         } );
-    } );
+    }
+    else
+    {
+        const query = _.map( ids, function( id ) {
+            return ['lrange', model.ns + ':' + id, 0, -1];
+        } );
+        redis.batch( query ).exec( function( err, list ) {
+            if( err ) return callback( error.tag( err, '1459123917809' ) );
+            const items = _.chain( list )
+                .map( _.partial( modelUtil.unzipKeys, _, model.schema, model.jsonReplacements ) )
+                .map( ( item, index ) => _.assign( item, {id: ids[index]} ) )
+                .value();
+
+            async.forEach( items, function( item, callback ) {
+                modelSchema.processHook( model.schema, 'onLoad', item, callback )
+            }, function( err ) {
+                if( err ) return callback( error.tag( err, '1459612746303' ) );
+                callback( null, items );
+            } );
+        } );
+    }
 };
 
 function loadSubmodels( redis, model, list, callback ) {
@@ -825,6 +880,36 @@ function updateFullTextIndex( redis, model, id, entity, callback ) {
         callback();
     } );
 }
+
+function updateGeoIndex( redis, model, id, entity, callback ) {
+    if( !model.index || _.isEmpty( model.index.geo ) ) return callback();
+
+    const query = _.map( model.index.geo, function( latLngProp, indexName ) {
+        const [lng,lat] = [entity[latLngProp[0]], entity[latLngProp[1]]];
+        return ['geoadd', ['g', 'ix', 'geo', indexName].join( ':' ), lng, lat, id];
+    } );
+
+    redis.batch( query ).exec( function( err ) {
+        if( err ) return callback( error.tag( err, '1468806164051' ) );
+        callback();
+    } );
+}
+
+// function updateGeoJsonIndex( redis, model, id, entity, callback ) {
+//     if( !model.index || _.isEmpty( model.index.geojson ) ) return callback();
+//
+//     const geometry = entity[model.index.geojson],
+//     // coordinates = _.chunk( _.flattenDeep( geometry.coordinates ), 2 ),
+//         coordinates = _.chunk( _.flattenDeep( entity[model.index.geojson] ), 2 ),
+//         query = _.map( coordinates, function( lngLat, i ) {
+//             const [lng,lat] = [lngLat[0], lngLat[1]];
+//             return ['geoadd', ['g', 'ix', 'gjs'].join( ':' ), lng, lat, i ? `${id}.${i}` : id];
+//         } );
+//     redis.batch( query ).exec( function( err ) {
+//         if( err ) return callback( error.tag( err, '1468821750249' ) );
+//         callback();
+//     } );
+// }
 
 function updateSecondaryIndex( redis, model, id, data, callback ) {
     if( !model.index ) return callback();

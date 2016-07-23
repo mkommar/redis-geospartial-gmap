@@ -5,6 +5,7 @@ import mutations from "./mutations";
 import * as config from "../../../config-public.json";
 import modal from "./modules/modal";
 import platform from "platform";
+import geo from "./modules/geo";
 
 Vue.use( Vuex );
 
@@ -26,7 +27,8 @@ export default new Vuex.Store( {
     },
     mutations,
     modules: {
-        modal
+        modal,
+        geo
     },
     strict: config.env === 'development'
 } );

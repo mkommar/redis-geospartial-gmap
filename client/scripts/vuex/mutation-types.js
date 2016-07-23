@@ -8,3 +8,6 @@ export const HIDE_MODAL = 'HIDE_MODAL';
 
 export const API_DATA_LOADING = 'API_DATA_LOADING';
 export const API_DATA_READY = 'API_DATA_READY';
+
+export const GEO_FEATURES = 'GEO_FEATURES';
+export const GEO_POINTS_BY_GROUP = 'GEO_POINTS_BY_GROUP';

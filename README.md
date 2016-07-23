@@ -70,3 +70,8 @@ Add private key to local session
 Test SSH Access
 
     $ ssh -T git@bitbucket.org
+
+Information
+
+http://gis.stackexchange.com/a/92331
+http://www.basistech.com/wp-content/uploads/2014/06/oss-2011-smiley-geospatial-search.pdf

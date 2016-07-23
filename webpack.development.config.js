@@ -24,7 +24,7 @@ const Webpack = require( 'webpack' ),
                     loader: 'babel',
                     query: {
                         plugins: ['lodash'],
-                        presets: ['es2015']
+                        presets: ['es2015', 'stage-0']
                     }
                 },
                 {
@@ -97,7 +97,7 @@ const Webpack = require( 'webpack' ),
             modulesDirectories: ['node_modules', 'client', 'shared/views/partials', 'shared/helpers']
         },
         babel: {
-            presets: ['es2015'],
+            presets: ['es2015', 'stage-0'],
             plugins: ['transform-runtime', 'lodash']
         },
         vue: {

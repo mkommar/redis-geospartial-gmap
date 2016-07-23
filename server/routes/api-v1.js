@@ -13,6 +13,7 @@ const _ = require( 'lodash' ),
     mwUtil = require( '../middlewares/unil' ),
     modelUser = require( '../models/user' ),
     modelAccount = require( '../models/account' ),
+    modelGeo = require( '../models/geo' ),
     controllerApi = require( '../controllers/api-v1' );
 
 const loadUser = function( req, res, next ) {
@@ -88,6 +89,67 @@ router.get( '/accounts/search', mwAuth.jwt( {breakIfDenied: true} ), loadUser,
 router.get( '/accounts/:accountId([0-9]+)', mwAuth.jwt( {breakIfDenied: true} ), loadUser,
     mwUtil.loadAsync( modelAccount.getById, ['req.params.accountId'], 'res.data' ),
     mwUtil.resValue( 'res.data' )
+);
+
+router.get( '/geo/features',
+    ( req, res, next ) => {
+
+        let {center, radius, units} = {
+            center: (req.query.filter.center && req.query.filter.center.lng && req.query.filter.center.lat)
+                ? req.query.filter.center
+                : {lng: 0, lat: 0},
+            radius: req.query.filter.radius || 100,
+            units: req.query.filter.units || 'm'
+        };
+        // return next();
+
+        // radius = 280100;
+
+        modelGeo.query( {
+            select: ['georadius', 'coord', [center.lng, center.lat], radius, 'm'],
+            // limit: {
+            //     offset: 0,
+            //     count: 1000
+            // },
+            geo: {
+                clustering: true
+            },
+            perfmon: true
+        }, ( err, list ) => {
+            if( err ) return next( error.tag( err, '1468846858650' ) );
+            res.data = list;
+            // console.log( _.omit( list, ['items', 'ids'] ) );
+            console.log( 'total points', '\t', list.total || 0 );
+            console.log( 'visible points', '\t', list.items.length );
+            console.log( 'total groups', '\t', list.geo.groups.length );
+            next();
+        } );
+    },
+    mwUtil.resValue( 'res.data' )
+);
+
+router.get( '/geo/features/:pointId',
+    ( req, res, next ) => {
+        next();
+    },
+    mwUtil.resNoop()
+);
+router.delete( '/geo/features/:featureId',
+    mwUtil.loadAsync( modelGeo.deleteFeature, ['req.params.featureId'] ),
+    mwUtil.resNoop()
+);
+router.post( '/geo/features',
+    mwUtil.loadAsync( modelGeo.upsert, ['req.body'] ),
+    mwUtil.resNoop()
+);
+
+router.get( '/geo/groups/:groupId/points',
+    mwUtil.loadAsync( modelGeo.pointsByGroup, ['req.params.groupId', 'req.query'], 'res.data' ),
+    mwUtil.resValue( 'res.data' )
+);
+router.delete( '/geo/groups/:groupId',
+    mwUtil.loadAsync( modelGeo.deleteGroup, ['req.params.groupId'] ),
+    mwUtil.resNoop()
 );
 
 module.exports = router;

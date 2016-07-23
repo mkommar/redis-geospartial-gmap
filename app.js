@@ -30,9 +30,10 @@ const express = require( 'express' ),
     middlewareLogger = require( './server/middlewares/logger' ),
     middlewareSecurityHeaders = require( './server/middlewares/security-headers' ),
     middlewarePrivateApp = require( './server/middlewares/private-app' ),
-    passport = require( 'passport' );
+    passport = require( 'passport' ),
+    env = config.get( 'env' ) || process.env.NODE_ENV || 'production';
 
-app.set( 'env', app.locals.env = (config.get( 'env' ) || config.get( 'NODE_ENV' )) );
+app.set( 'env', app.locals.env = env );
 app.locals.baseUrl = config.get( 'app:baseUrl' );
 _.defaults( app.locals, {
     app: {
@@ -48,8 +49,8 @@ _.defaults( app.locals, {
 app.set( 'trust proxy', 'loopback' );
 app.disable( 'x-powered-by' );
 
-logger.info( `INIT base url: ${config.get( 'app:baseUrl' )}` );
-logger.info( `INIT environment: ${app.get( 'env' )}` );
+logger.info( `INIT APP base url: ${config.get( 'app:baseUrl' )}` );
+logger.info( `INIT APP environment: ${app.get( 'env' )}` );
 
 
 /* SERVICES */
@@ -62,14 +63,14 @@ app.use( '/build', express.static( path.join( __dirname, './public/build' ) ) );
 app.use( '/images', express.static( path.join( __dirname, './public/images' ) ) );
 app.use( '/locales', express.static( path.join( __dirname, './shared/locales' ) ) );
 app.use( favicon( path.join( __dirname, './public/favicon.ico' ) ) );
-logger.info( `INIT static /build` );
-logger.info( `INIT static /images` );
-logger.info( `INIT static /locales` );
-logger.info( `INIT static /favicon` );
+logger.info( `INIT APP static /build` );
+logger.info( `INIT APP static /images` );
+logger.info( `INIT APP static /locales` );
+logger.info( `INIT APP static /favicon` );
 
 /* APP */
 app.use( middlewareLogger.before );
-app.use( middlewareSecurityHeaders );
+// app.use( middlewareSecurityHeaders );
 app.use( middlewareApp );
 view( app );
 router( app );

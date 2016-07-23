@@ -13,17 +13,18 @@ const config = require( './server/config' ),
     middlewareError = require( './server/middlewares/error' ),
     middlewareLogger = require( './server/middlewares/logger' ),
     corsOptions = {
-        origin: [config.get( 'api:cors:origin' ), 'https://www.gog.com'],
+        origin: [config.get( 'api:cors:origin' )],
         maxAge: 1728000
-    };
+    },
+    env = config.get( 'env' ) || process.env.NODE_ENV || 'production';
 
-app.set( 'env', app.locals.env = (config.get( 'env' ) || config.get( 'NODE_ENV' )) );
+app.set( 'env', app.locals.env = env );
 app.locals.baseUrl = config.get( 'api:baseUrl' );
 app.set( 'trust proxy', 'loopback' );
 app.disable( 'x-powered-by' );
-logger.info( `INIT base url: ${config.get( 'api:baseUrl' )}` );
-logger.info( `INIT origin: ${config.get( 'api:cors:origin' )}` );
-logger.info( `INIT environment: ${app.get( 'env' )}` );
+logger.info( `INIT API base url: ${config.get( 'api:baseUrl' )}` );
+logger.info( `INIT API origin: ${config.get( 'api:cors:origin' )}` );
+logger.info( `INIT API environment: ${app.get( 'env' )}` );
 
 
 /* APP */

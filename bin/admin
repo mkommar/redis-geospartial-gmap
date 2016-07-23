@@ -7,7 +7,7 @@ const _ = require( 'lodash' ),
     vorpal = require( 'vorpal' )(),
     modelUser = require( '../server/models/user' );
 
-const models = ['account', 'user', 'game'];
+const models = ['account', 'user', 'geo'];
 
 vorpal.command( 'flush-model [model]' )
     .autocomplete( models )
