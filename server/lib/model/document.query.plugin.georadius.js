@@ -24,11 +24,10 @@ function pointsToPolygon( points ) {
 function parse( cmd, level, callback ) {
     level = -1;
     // if( cmd[0] === 'georadius' )
-
     const geoKey = this.tempStoreKey( this.keys.geo ),
         resultKey = this.tempStoreKey( [geoKey, this.keys.geo] ),
         [radius,units] = [cmd[3], cmd[4]],
-        bitDepth = minBitDepth( radius / 4 ),
+        bitDepth = this.query.geo.clustering ? minBitDepth( radius / 4 ) : 52,
         keys = getKeys( this.model ),
         [lng,lat] = [cmd[2][0], cmd[2][1]];
 
@@ -36,7 +35,7 @@ function parse( cmd, level, callback ) {
     this.stores.tempKeys.push( ...tempKeys );
 
     const queryStack = [
-        /*0*/['georadius', keys.groups( bitDepth ), lng, lat, radius, units, 'STORE', tempKeys[0]],
+        /*0*/['georadius', keys.groups( bitDepth ), lng, lat, radius, units, 'COUNT', 1000, 'STORE', tempKeys[0]],
         /*1*/['zinterstore', tempKeys[1], 2, tempKeys[0], keys.counter( bitDepth ), 'WEIGHTS', 0, 1],
         /*2*/['zinterstore', tempKeys[2], 2, tempKeys[0], keys.points( bitDepth ), 'WEIGHTS', 0, 1],
         /*3*/['zrange', tempKeys[0], 0, -1, 'WITHSCORES'], // [group,geohash]

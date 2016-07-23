@@ -112,7 +112,7 @@ router.get( '/geo/features',
             //     count: 1000
             // },
             geo: {
-                clustering: true
+                // clustering: true
             },
             perfmon: true
         }, ( err, list ) => {

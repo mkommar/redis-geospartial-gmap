@@ -158,6 +158,35 @@ describe( 'model.document.index.geo', function() {
         } );
     } );
 
+    it( 'should test #query georadius without clustering (ids only)', function( done ) {
+        /*
+         * Note
+         * distance between [10,10] and [11,11] 155.9 km
+         * distance between [11,11] and [12,12] 155.7 km
+         * distance between [10,10] and [12,12] 311.6 km
+         */
+        const radius = 400 * 1000;
+        model.query( {
+            select: ['georadius', 'coord', [10, 10], radius, 'm'],
+            geo: {},
+            idOnly: true
+        }, ( err, res ) => {
+            expect( err || null ).to.be.null;
+
+            console.log( res.ids );
+
+            // total points
+            expect( res.total ).to.be.equal( 61 );
+
+            // metadata
+            expect( res.geo.radius ).to.be.equal( 400 * 1000 );
+            expect( res.geo.units ).to.be.equal( 'm' );
+            expect( res.geo.bitDepth ).to.be.equal( 52 );
+
+            done();
+        } );
+    } );
+
     it.skip( 'should test #query georadius clustering (with entity loading)', function( done ) {
         const radius = 400 * 1000;
         model.query( {

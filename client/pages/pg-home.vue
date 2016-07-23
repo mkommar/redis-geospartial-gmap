@@ -1,8 +1,8 @@
 <template>
     <div class="wrapper">
         <div class="sidebar ">
-            <div class="sidebar-body">
-                <div class="mdl-card" v-if="selectedObject.type==='point'">
+            <div class="sidebar-body mdl-grid">
+                <div class="mdl-cell mdl-card" v-if="selectedObject.type==='point'">
                     <div class="am-card-header">
                         <div class="mdl-card__title">
                             <span v-text="selectedObject.item.properties.placeName"></span>
@@ -35,23 +35,23 @@
                             <icon class="icon" name="mdi-delete" size="20"></icon>
                             Delete point
                         </mdl-button>
+                        <mdl-button class="button-delete" v-mdl-ripple-effect @click="findNearby(selectedObject)"
+                                    :disabled="loading">
+                            <icon class="icon" name="fa-search" size="20"></icon>
+                            Find nearby
+                        </mdl-button>
                     </div>
                 </div>
 
-                <div class="mdl-card" v-if="!selectedObject.type">
-                    <ul class="properties-list">
-                        <li>
-                            <span class="item-title">Radius:</span>
-                            <span v-text="query.filter.radius+'m'"></span>
-                        </li>
-                    </ul>
+                <div class="mdl-cell mdl-cell--12-col">
+                    <vcu-find-nearby :nearby="nearby" @c-nearby_update="reloadFeatures"></vcu-find-nearby>
                 </div>
 
-                <div class="mdl-card" v-if="!selectedObject.type">
+                <div class="mdl-cell mdl-card" v-if="!selectedObject.type">
                     <mdl-button colored fab @click="showAddPointForm">+</mdl-button>
                 </div>
 
-                <div class="mdl-card" v-if="selectedObject.type=='new-point'">
+                <div class="mdl-cell mdl-card" v-if="selectedObject.type=='new-point'">
                     <h3>New point</h3>
                     <mdl-textfield floating-label="Place name" :value.sync="newPoint.placeName"></mdl-textfield>
                     <mdl-textfield floating-label="Latitude" :value.sync="newPoint.lat"></mdl-textfield>
@@ -63,38 +63,16 @@
                     </mdl-button>
                 </div>
 
-                <div class="mdl-card" v-if="selectedObject.type==='group'">
+                <div class="mdl-cell mdl-card mdl-cell--bottom" v-if="selectedObject.type==='group'">
                     <div class="am-card-header">
                         <div class="mdl-card__title">
                             <span>Group</span>
                         </div>
                     </div>
-
-                    <ul class="mdl-card__supporting-text mdl-card--border properties-list">
-                        <li>
-                            <span class="item-title">Group ID:</span>
-                            <span v-text="selectedObject.item.groupId"></span>
-                        </li>
-                        <li>
-                            <span class="item-title">Coordinates:</span>
-                            <div v-text="selectedObject.item.coordinates[1]"></div>
-                            <div v-text="selectedObject.item.coordinates[0]"></div>
-                        </li>
-                        <li>
-                            <span class="item-title">Boundary box:</span>
-                            <div v-text="selectedObject.item.boundaryBox[0][1]"></div>
-                            <div v-text="selectedObject.item.boundaryBox[0][0]"></div>
-                            <div v-text="selectedObject.item.boundaryBox[1][1]"></div>
-                            <div v-text="selectedObject.item.boundaryBox[1][0]"></div>
-                            <mdl-button v-mdl-ripple-effect @click="boundaryBox=selectedObject.item.boundaryBox">
-                                Show
-                            </mdl-button>
-                        </li>
-                        <li>
-                            <span class="item-title">Total points:</span>
-                            <span v-text="selectedObject.item.total"></span>
-                        </li>
-                    </ul>
+                    <div>
+                        <span class="item-title">Total points:</span>
+                        <span v-text="selectedObject.item.total"></span>
+                    </div>
 
                     <ol class="mdl-card__supporting-text mdl-card--border group-points-list">
                         <li v-for="point in pointsByGroup.items" track-by="id" @click="selectedPoint=point">
@@ -119,8 +97,9 @@
             <map class="map" v-ref:map
                  :center.sync="center"
                  :zoom.sync="zoom"
+                 :radius.sync="radius"
                  :map-type-id.sync="mapTypeId"
-                 @g-bounds_changed="reloadFeatures"
+                 @g-bounds_changed="boundsChanged"
                  @g-dragstart="mapDragStart"
                  @g-dragend="mapDragEnd"
                  @g-click="mapClick">
@@ -155,6 +134,12 @@
                         :draggable="true"
                 >
                 </marker>
+
+                <circle v-ref:circle v-if="nearby.enabled && nearby.showArea"
+                        :center="nearby.center | latLng"
+                        :radius="nearby.radius"
+                >
+                </circle>
             </map>
         </div>
     </div>
@@ -180,6 +165,26 @@
                         @g-radius_changed="georadiusCircleUpdate"
                 >
                 </circle>
+
+<li>
+                            <span class="item-title">Group ID:</span>
+                            <span v-text="selectedObject.item.groupId"></span>
+                        </li>
+                        <li>
+                            <span class="item-title">Coordinates:</span>
+                            <div v-text="selectedObject.item.coordinates[1]"></div>
+                            <div v-text="selectedObject.item.coordinates[0]"></div>
+                        </li>
+                        <li>
+                            <span class="item-title">Boundary box:</span>
+                            <div v-text="selectedObject.item.boundaryBox[0][1]"></div>
+                            <div v-text="selectedObject.item.boundaryBox[0][0]"></div>
+                            <div v-text="selectedObject.item.boundaryBox[1][1]"></div>
+                            <div v-text="selectedObject.item.boundaryBox[1][0]"></div>
+                            <mdl-button v-mdl-ripple-effect @click="boundaryBox=selectedObject.item.boundaryBox">
+                                Show
+                            </mdl-button>
+                        </li>
 -->
 
 <style lang="scss" scoped>
@@ -249,7 +254,11 @@
         overflow    : auto;
         flex-grow   : 1;
         flex-shrink : 1;
-        max-height  : 400px;
+        max-height  : 300px;
+    }
+
+    .nearby__area-checkbox {
+        padding-top : 4px;
     }
 </style>
 
@@ -265,6 +274,7 @@
             addFeature
     } from "../scripts/vuex/modules/geo";
     import clusteringMarkerTemplate from "./pg-home/clustering-marker.html";
+    import VcuFindNearby from "../components/vcu-find-nearby.vue"
 
     /*
      * https://github.com/GuillaumeLeclerc/vue-google-maps
@@ -287,10 +297,12 @@
         },
         data () {
             return {
+                radius: 0,
                 googleMapLoaded: false,
-//                center: {lat: 69.352158, lng: 88.185174},
-                center: {lat: 40.8583013724024, lng: -100.65470026757816},
-                zoom: 4,
+                // center: {lat: 69.352158, lng: 88.185174},
+                // center: {lat: 40.8583013724024, lng: -100.65470026757816},
+                center: {lat: 32.310286886043485, lng: -64.75532816674809},
+                zoom: 12,
                 clickable: true,
                 draggable: true,
                 mapTypeId: 'terrain',
@@ -331,7 +343,15 @@
                 },
                 boundaryBox: null,
                 selectedPoint: null,
-                newPoint: null
+                newPoint: null,
+                nearby: {
+                    enabled: false,
+                    radius: 5000,
+                    units: 'm',
+                    center: [0, 0],
+                    showArea: true,
+                    lockPosition: true
+                }
             }
         },
         methods: {
@@ -342,45 +362,43 @@
             saveQueryFilter(){
                 localStorage.setItem( 'features-query-filter', JSON.stringify( this.query ) );
             },
-            geoFeatures( options ){
-                return this.getGeoFeatures( options );
-            },
+            boundsChanged: _.debounce( function() {
+                this.reloadFeatures();
+                if( !this.nearby.lockPosition )
+                {
+                    this.nearby.center = [this.center.lng, this.center.lat];
+                }
+            }, 100 ),
             reloadFeatures: _.debounce( function() {
-                console.log( 'RELOAD FEATURES' );
-                this.query.filter.center = _.assign( {}, this.center );
-                // this.$router.go( this.$options.filters.qs( this.query ) );
-                this.query.filter.radius = this.getRadius();
-                this.saveQueryFilter();
-
-                this.geoFeatures( _.assign( {}, this.query ) );
-
-                this.reloadFeaturesDelayed();
+                this.updateRadius();
+                if( this.nearby.enabled )
+                {
+                    this.query.filter.center = _.assign( {
+                        lat: this.nearby.center[1],
+                        lng: this.nearby.center[0]
+                    } );
+                    this.query.filter.radius = this.nearby.radius;
+                    this.getGeoFeatures( this.query );
+                }
+                else
+                {
+                    this.query.filter.center = _.assign( {}, this.center );
+                    this.query.filter.radius = this.radius;
+                    this.getGeoFeatures( this.query );
+                }
             }, 200 ),
-            reloadFeaturesDelayed: _.debounce( function() {
-                console.log( 'RELOAD FEATURES DELAYED' );
-                this.query.filter.center = _.assign( {}, this.center );
-                // this.$router.go( this.$options.filters.qs( this.query ) );
-                this.query.filter.radius = this.getRadius();
-                this.saveQueryFilter();
-
-                this.geoFeatures( _.assign( {}, this.query ) );
-            }, 1000 ),
-            getRadius(){
+            /**
+             * Calculate radius (in meters)
+             */
+            updateRadius() {
                 const map = this.$refs.map.mapObject;
                 if( !map ) return 0;
-                var bounds = map.getBounds();
-                var center = map.getCenter();
-                if( !bounds || !center ) return 0;
-                var ne = bounds.getNorthEast();
-                // Calculate radius (in meters).
-                var radius = parseInt( google.maps.geometry.spherical.computeDistanceBetween( center, ne ), 10 );
-                console.log( 'RADIUS', radius );
-
-                const precision = Math.round( radius * 0.01 );
-
-                console.log( 'precision', precision );
-
-                return Math.round( radius / precision ) * precision;
+                const bounds = map.getBounds(),
+                        center = map.getCenter(),
+                        ne = bounds.getNorthEast(),
+                        radius = parseInt( google.maps.geometry.spherical.computeDistanceBetween( center, ne ), 10 ),
+                        precision = Math.round( radius * 0.01 );
+                this.radius = Math.round( radius / precision ) * precision;
             },
             /**
              * https://developers.google.com/maps/documentation/javascript/markers
@@ -442,7 +460,6 @@
             mapDragStart(){
             },
             mapDragEnd(){
-                this.reloadFeatures();
             },
             deletePoints( object ){
                 if( object.type === 'group' )
@@ -486,6 +503,11 @@
                     this.newPoint = null;
                     this.reloadFeatures();
                 } );
+            },
+            findNearby(){
+                this.nearby.center = _.clone( this.selectedObject.item.coordinates );
+                this.nearby.enabled = true;
+                this.reloadFeatures();
             }
         },
         route: {
@@ -517,10 +539,13 @@
                 } );
                 this.googleMapLoaded = true;
             }
+
+            this.nearby.center = [this.center.lng, this.center.lat]
         },
         filters: {
-            latLng: val => {
-                return {lat: val[1], lng: val[0]}
+            latLng: {
+                read: ( val ) => ({lat: val[1], lng: val[0]}),
+                write: ( val ) => [val.lng, val.lat]
             },
             pointsToBounds: ( points ) => {
                 return {
@@ -535,7 +560,8 @@
             Map,
             Marker,
             Rectangle,
-            Circle
+            Circle,
+            VcuFindNearby
         }
     }
 </script>
