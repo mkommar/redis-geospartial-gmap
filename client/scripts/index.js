@@ -9,26 +9,15 @@ import Vue from "vue";
 import store from "./vuex/store";
 import router from "./router";
 import {sync} from "vuex-router-sync";
-import cookies from "js-cookie";
-import $ from "jquery";
 import {init as mdlInit} from "./mdl";
-import {setAuthToken, getCurrentUser, switchLang, socketConnect} from "./vuex/actions";
-import VueMdl from "vue-mdl";
+import VueMdl from "../components/vue-mdl/src/vue-mdl";
 import VueIcon from "vue-icons/icon";
-
+console.log(1211);
 sync( store, router );
-
 Vue.config.debug = true;
 Vue.config.devtools = true;
 Vue.use( VueMdl );
 Vue.component( 'icon', VueIcon );
-
-const init = setAuthToken( store, cookies.get( 'jwt' ) )
-    .then( () => Promise.all( [
-        getCurrentUser( store ),
-        switchLang( store, cookies.get( 'lang' ) || 'en' )
-    ] ) )
-    .then( () => socketConnect( store ) );
 
 if( module.hot )  module.hot.accept();
 
@@ -45,7 +34,6 @@ const App = Vue.extend( {
     }
 } );
 
-$( () => init
-    .then( () => { router.start( App, '#app' ) } )
-    .catch( console.error.bind( console ) )
-);
+document.addEventListener( 'DOMContentLoaded', () => {
+    router.start( App, '#app' );
+} );

@@ -12,9 +12,6 @@ const router = new VueRouter( {
 router.map( {
     '/': {
         component: require( '../pages/pg-home.vue' )
-    },
-    '/login': {
-        component: require( '../pages/pg-login.vue' )
     }
 } );
 

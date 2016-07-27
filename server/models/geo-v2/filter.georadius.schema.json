@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "georadius": {
+      "type": "object",
+      "properties": {
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -85.05112878,
+              "maximum": 85.05112878,
+              "required": true
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "required": true
+            }
+          }
+        },
+        "radius": {
+          "type": "integer",
+          "minimum": 1,
+          "required": true
+        },
+        "units": {
+          "type": "string",
+          "enum": [
+            "m",
+            "km",
+            "mi",
+            "ft"
+          ],
+          "required": true
+        },
+        "limit": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 100,
+              "minimum": 1,
+              "maximum": 1000,
+              "required": true
+            }
+          }
+        }
+      },
+      "required": true
+    }
+  }
+}

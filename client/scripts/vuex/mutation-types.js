@@ -1,7 +1,5 @@
-export const CURRENT_USER = 'CURRENT_USER';
-export const CURRENT_USER_UPDATE = 'CURRENT_USER_UPDATE';
-export const API_TOKEN = 'API_TOKEN';
-export const LANG = 'LANG';
+export const SET_MODE = 'SET_MODE';
+export const RELOAD_REQUIRED = 'RELOAD_REQUIRED';
 
 export const SHOW_MODAL = 'SHOW_MODAL';
 export const HIDE_MODAL = 'HIDE_MODAL';
@@ -9,5 +7,15 @@ export const HIDE_MODAL = 'HIDE_MODAL';
 export const API_DATA_LOADING = 'API_DATA_LOADING';
 export const API_DATA_READY = 'API_DATA_READY';
 
-export const GEO_FEATURES = 'GEO_FEATURES';
-export const GEO_POINTS_BY_GROUP = 'GEO_POINTS_BY_GROUP';
+export const POINTS = 'POINTS';
+export const SELECT_POINT = 'SELECT_POINT';
+export const UPDATE_NEW_POINT_VALUE = 'UPDATE_NEW_POINT_VALUE';
+export const POINTS_RESET_SELECTED = 'POINTS_RESET_SELECTED';
+export const POINTS_RESET_NEW = 'POINTS_RESET_NEW';
+
+export const MAP_LOADED = 'MAP_LOADED';
+export const MAP_CENTER = 'MAP_CENTER';
+
+export const RADIUS_SET_CENTER = 'RADIUS_SET_CENTER';
+export const UPDATE_NEARBY_VALUE = 'UPDATE_NEARBY_VALUE';
+export const NEARBY_RESET = 'NEARBY_RESET';

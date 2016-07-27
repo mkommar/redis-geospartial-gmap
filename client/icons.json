@@ -1,6 +1,7 @@
 [
   "fa-google",
   "fa-facebook",
-  "mdi-delete",
-  "fa-search"
+  "material-delete",
+  "material-add",
+  "material-search"
 ]

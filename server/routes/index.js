@@ -12,4 +12,4 @@ const express = require( 'express' ),
 
 router.get( '*', middlewaresIndex, controller.index );
 
-module.exports = router;
+module.exports = router; 

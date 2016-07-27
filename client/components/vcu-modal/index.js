@@ -7,9 +7,6 @@ const component = {
         close: function() {
             this.$dispatch( 'close' );
         }
-    },
-    components: {
-        vcuSpinner: require( '../vcu-spinner' )
     }
 };
 

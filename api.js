@@ -7,8 +7,6 @@ const config = require( './server/config' ),
 
     cors = require( 'cors' ),
     bodyParser = require( 'body-parser' ),
-    passport = require( 'passport' ),
-    passportStrategies = require( './server/middlewares/passport' ),
 
     middlewareError = require( './server/middlewares/error' ),
     middlewareLogger = require( './server/middlewares/logger' ),
@@ -43,10 +41,8 @@ app.use( middlewareLogger.before );
 
 app.use( bodyParser.json( {limit: '5mb'} ) );
 app.use( bodyParser.urlencoded( {extended: false} ) );
-app.use( passport.initialize() );
-passportStrategies( passport ).jwt();
 
-app.use( '/v1', require( './server/routes/api-v1' ) );
+app.use( '/v2', require( './server/routes/api-v2' ) );
 
 app.use( middlewareLogger.after );
 app.use( middlewareError );

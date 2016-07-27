@@ -1,6 +1,5 @@
 @charset "UTF-8";
 
-@import "./variables";
 @import "./font";
 @import "./mdl";
 
@@ -9,14 +8,31 @@
     flex-flow : column nowrap;
 }
 
-.mdl-layout__content > *:not(.mdl-layout-spacer) {
-    //flex : none;
-}
-
 .content {
     max-width : 1060px;
 }
 
 html, body {
     font-family : Roboto, sans-serif;
+}
+
+h3 {
+    font-size     : 24px;
+    font-weight   : 400;
+    line-height   : 28px;
+    margin-top    : 8px;
+    margin-bottom : 8px;
+}
+
+.mdl-textfield {
+    padding : 16px 0;
+    .mdl-textfield__label {
+        top : 18px;
+    }
+    .mdl-textfield__label:after {
+        bottom : 16px;
+    }
+    .mdl-textfield__input {
+        font-size : 14px;
+    }
 }
