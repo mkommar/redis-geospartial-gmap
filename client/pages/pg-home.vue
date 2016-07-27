@@ -4,16 +4,16 @@
         <!-- SIDEBAR -->
         <div class="sidebar ">
             <div class="sidebar-body mdl-grid mdl-grid--no-spacing">
-                <div class="mdl-cell sidebar-item" v-if="mode=='normal'">
+                <div class="sidebar-item" v-if="mode=='normal'">
                     <vcu-selected-point></vcu-selected-point>
                 </div>
-                <div class="mdl-cell sidebar-item" v-if="mode=='normal'">
+                <div class="sidebar-item" v-if="mode=='normal'">
                     <vcu-find-nearby></vcu-find-nearby>
                 </div>
-                <div class="mdl-cell sidebar-item" v-if="mode=='new-point'">
+                <div class="sidebar-item" v-if="mode=='new-point'">
                     <vcu-new-point-form></vcu-new-point-form>
                 </div>
-                <div class="mdl-cell sidebar-item mdl-cell--bottom" v-if="mode=='normal'">
+                <div class="sidebar-item" v-if="mode=='normal'">
                     <vcu-add-point-button></vcu-add-point-button>
                 </div>
             </div>
@@ -154,16 +154,17 @@
         display        : flex;
         flex-direction : column;
         flex-wrap      : nowrap;
+        width          : 300px;
     }
 
     .sidebar-item {
-        display          : flex;
-        flex-direction   : column;
-        width            : 300px;
-        min-height       : 0;
-        max-height       : 100%;
-        padding          : 8px;
-        /*overflow         : auto;*/
+        display        : flex;
+        flex-direction : column;
+        width          : 300px;
+        min-height     : 0;
+        max-height     : 100%;
+        padding        : 8px;
+        box-sizing     : border-box;
         > div {
             width : 100%;
         }
