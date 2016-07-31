@@ -12,7 +12,7 @@ import {sync} from "vuex-router-sync";
 import {init as mdlInit} from "./mdl";
 import VueMdl from "../components/vue-mdl/src/vue-mdl";
 import VueIcon from "vue-icons/icon";
-console.log(1211);
+
 sync( store, router );
 Vue.config.debug = true;
 Vue.config.devtools = true;
